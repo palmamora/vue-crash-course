@@ -2,9 +2,25 @@
 import router from '@/router';
 import axios from 'axios';
 import { reactive } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
+const route = useRoute();
+const jobId = route.params.id;
+const state = reactive({
+    type: 'Full-Time',
+    title: '',
+    description: '',
+    salary: '',
+    location: '',
+    company: {
+        name: '',
+        description: '',
+        contactEmail: '',
+        contactPhone: ''
+    }
+})
 
 const form = reactive({
     type: 'Full-Time',
@@ -53,7 +69,7 @@ const handleSubmit = async () => {
         <div class="container m-auto max-w-2xl py-24">
             <div class="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0">
                 <form @submit.prevent="handleSubmit">
-                    <h2 class="text-3xl text-center font-semibold mb-6">Add Job</h2>
+                    <h2 class="text-3xl text-center font-semibold mb-6">Edit Job</h2>
 
                     <div class="mb-4">
                         <label for="type" class="block text-gray-700 font-bold mb-2">Job Type</label>
@@ -137,7 +153,7 @@ const handleSubmit = async () => {
                         <button
                             class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline"
                             type="submit">
-                            Add Job
+                            Edit Job
                         </button>
                     </div>
                 </form>
