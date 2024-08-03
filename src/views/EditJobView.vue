@@ -1,25 +1,16 @@
 <script setup>
 import router from '@/router';
 import axios from 'axios';
-import { reactive } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { reactive, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 
 const toast = useToast();
 const route = useRoute();
 const jobId = route.params.id;
 const state = reactive({
-    type: 'Full-Time',
-    title: '',
-    description: '',
-    salary: '',
-    location: '',
-    company: {
-        name: '',
-        description: '',
-        contactEmail: '',
-        contactPhone: ''
-    }
+    job: {},
+    isLoading : true
 })
 
 const form = reactive({
@@ -37,7 +28,7 @@ const form = reactive({
 })
 
 const handleSubmit = async () => {
-    const newJob = {
+    const updatedJob = {
         title: form.title,
         type: form.type,
         description: form.description,
@@ -52,15 +43,36 @@ const handleSubmit = async () => {
     }
 
     try {
-        const res = await axios.post('/api/jobs', newJob);
+        const res = await axios.put(`/api/jobs/${jobId}`, updatedJob);
         //show toast
-        toast.success('job added successfully')
+        toast.success('job edited successfully')
         router.push(`/jobs/${res.data.id}`)
     } catch (error) {
-        toast.error('job was not added')
-        console.error('error adding job', error);
+        toast.error('job was not edited')
+        console.error('error edited job', error);
     }
 }
+
+onMounted(async () => {
+    try {
+        const res = await axios.get(`/api/jobs/${jobId}`)
+        state.job = res.data;
+        form.title = state.job.title;
+        form.type = state.job.type;
+        form.description = state.job.description;
+        form.location = state.job.location;
+        form.salary = state.job.salary;
+        form.company.name = state.job.company.name;
+        form.company.description = state.job.company.description;
+        form.company.contactEmail = state.job.company.contactEmail;
+        form.company.contactPhone = state.job.company.contactPhone;
+
+    } catch (error) {
+        console.error('error fetching job', error);
+    } finally {
+        state.isLoading = false;
+    }
+})
 
 </script>
 
